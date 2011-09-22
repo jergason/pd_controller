@@ -23,6 +23,7 @@
 import sys
 import math
 import time
+import random
 
 from bzrc import BZRC, Command
 
@@ -33,6 +34,12 @@ class Agent(object):
         self.bzrc = bzrc
         self.constants = self.bzrc.get_constants()
         self.commands = []
+        self.shoot_time_limit = random.uniform(1.5, 2.0)
+        self.state = "not turning"
+        self.last_shot_time = 0.0
+        self.move_time_limit = 4.0
+        self.last_turn_time = time.time() + self.move_time_limit
+        self.time_to_turn_60_degrees = 0.6
 
     def tick(self, time_diff):
         """Some time has passed; decide what to do next."""
@@ -45,9 +52,32 @@ class Agent(object):
                         self.constants['team']]
 
         self.commands = []
+        #Do nothing if we have no tanks.
+        if len(self.mytanks) == 0:
+            return
 
-        for tank in mytanks:
-            self.attack_enemies(tank)
+        current_time = time.time()
+        # Check if we need to shoot
+        if current_time > self.last_shot_time + self.shoot_time_limit:
+            self.commands.append(Command(self.mytanks[0].index, 1, 0, True))
+            self.last_shot_time = time.time()
+            self.shoot_time_limit = random.uniform(1.5, 2.0)
+
+        # If we need to start turning
+        if current_time > self.last_turn_time + self.time_to_turn_60_degrees + self.move_time_limit and self.state != "turning":
+            self.last_turn_time = current_time
+            self.commands.append(Command(self.mytanks[0].index, 1, 1, False))
+            self.state = "turning"
+        elif self.state == "turning":
+            # If we need to stop turning
+            if current_time > self.last_turn_time + self.time_to_turn_60_degrees:
+                self.commands.append(Command(self.mytanks[0].index, 1, 0, False))
+                self.state = "not_turning"
+
+
+
+        # for tank in mytanks:
+        #     self.attack_enemies(tank)
 
         results = self.bzrc.do_commands(self.commands)
 
