@@ -55,26 +55,30 @@ class Agent(object):
         self.flags = flags
 
         self.commands = []
-        #Do nothing if we have no tanks.
-        if len(self.mytanks) == 0:
-            return
 
         current_time = time.time()
+        # self.commands.append(SpeedCommand(self.mytanks[0].index, 1.0))
+        self.bzrc.speed(self.mytanks[0].index, 1.0)
         # Check if we need to shoot
         if current_time > self.last_shot_time + self.shoot_time_limit:
-            self.commands.append(ShootCommand(self.mytanks[0].index))
+            # self.commands.append(ShootCommand(self.mytanks[0].index))
+            self.bzrc.shoot(self.mytanks[0].index)
             self.last_shot_time = time.time()
             self.shoot_time_limit = random.uniform(1.5, 2.0)
 
         # If we need to start turning
         if current_time > self.last_turn_time + self.time_to_turn_60_degrees + self.move_time_limit and self.state != "turning":
             self.last_turn_time = current_time
-            self.commands.append(AngvelCommand(self.mytanks[0].index, 1))
+            # self.commands.append(AngvelCommand(self.mytanks[0].index, 1))
+            print("turning")
+            self.bzrc.angvel(self.mytanks[0].index, 1.0)
             self.state = "turning"
         elif self.state == "turning":
             # If we need to stop turning
             if current_time > self.last_turn_time + self.time_to_turn_60_degrees:
-                self.commands.append(AngvelCommand(self.mytanks[0].index, 0))
+                self.bzrc.angvel(self.mytanks[0].index, 0.0)
+                print("not turning")
+                # self.commands.append(AngvelCommand(self.mytanks[0].index, 0))
                 self.state = "not_turning"
 
 
@@ -82,7 +86,7 @@ class Agent(object):
         # for tank in mytanks:
         #     self.attack_enemies(tank)
 
-        results = self.bzrc.do_commands(self.commands)
+        # results = self.bzrc.do_commands(self.commands)
 
     def attack_enemies(self, tank):
         """Find the closest enemy and chase it, shooting as you go."""
