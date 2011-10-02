@@ -47,13 +47,12 @@ class Agent(object):
         #calculate field to goal
         #move tank towards goal
         mytanks, othertanks, flags, shots = self.bzrc.get_lots_o_stuff()
-        print(mytanks[0].x)
+        #create tank objects
+        #calculate environment
+        #pass to react to get commands back from tanks
+        #then do commands
         self.mytanks = mytanks
-        self.othertanks = othertanks
         self.flags = flags
-        self.shots = shots
-        self.enemies = [tank for tank in othertanks if tank.color !=
-                        self.constants['team']]
 
         self.commands = []
         #Do nothing if we have no tanks.
