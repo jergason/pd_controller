@@ -1,3 +1,6 @@
+import time
+import random
+
 class DumbTank(object):
 
     def __init__(self, bzrc, tank):

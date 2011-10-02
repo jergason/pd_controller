@@ -22,8 +22,7 @@
 
 import sys
 import time
-import dumb_agent import DumbTank
-
+from dumb_agent import DumbTank
 from bzrc import *
 
 class Agent(object):
@@ -32,9 +31,9 @@ class Agent(object):
     def __init__(self, bzrc):
         self.bzrc = bzrc
         self.constants = self.bzrc.get_constants()
-        self.sendline('mytanks')
-        self.read_ack()
-        mytanks = self.read_mytanks()
+        self.bzrc.sendline('mytanks')
+        self.bzrc.read_ack()
+        mytanks = self.bzrc.read_mytanks()
         self.tank1 = DumbTank(self.bzrc, mytanks[0])
         self.tank2 = DumbTank(self.bzrc, mytanks[1])
 
