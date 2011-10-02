@@ -13,3 +13,24 @@ def calculate_field_to_goal(xy, goal_xy, r, s):
         return { 'x': alpha * (d - r) * math.cos(theta), 'y': alpha * (d - r) * math.sin(theta) }
     else:
         return { 'x': alpha * s * math.cos(theta), 'y': alpha * s * math.sin(theta) }
+
+def determine_turn_direction(angle, target_angle):
+    error_range = 0.05
+    step = .01
+    delta = 0.0
+    angle = normalize_angle(angle)
+    target_angle = normalize_angle(target_angle)
+
+    while True:
+        if abs(((angle - delta) % (2 * math.pi)) - target_angle) <= error_range:
+            return "counter_clockwise"
+        elif abs(((angle + delta) % (2 * math.pi)) - target_angle) <= error_range:
+            return "clockwise"
+        else:
+            delta += step
+
+
+
+def normalize_angle(angle):
+    return angle = (angle + (2 * math.pi)) % (2 * math.pi)
+

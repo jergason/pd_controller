@@ -53,6 +53,8 @@ class Agent(object):
         # Loop through each tank, calculating speed
         for tank in self.mytanks:
             self.bzrc.angvel(tank.index, self.calculate_angvel(tank, field))
+            #speed depends on how far away we are?
+            #just ignore that for now, see if it works.
             self.bzrc.speed(tank.index, self.calculate_speed(tank, field))
 
     def calculate_angvel(self, tank, fields):
@@ -60,11 +62,11 @@ class Agent(object):
         # Res is a vector. now compare the angle of the vector to our angle.
         target_angle_in_radians = math.atan2(res['x'], res['y'])
         tank_angle = tank.angle
-        # Compare two angles. pick a direction for us to turn?
-        if tank_angle > target_angle_in_radians:
-            return -1
-        else:
+        direction = self.determine_turn_direction(tank_angle, target_angle)
+        if direction == "clockwise":
             return 1
+        else:
+            return -1
 
     def attack_enemies(self, tank):
         """Find the closest enemy and chase it, shooting as you go."""
