@@ -13,6 +13,8 @@ import sys
 import math
 import time
 import random
+import field_calculator
+from field import Field
 
 from bzrc import *
 
@@ -32,7 +34,7 @@ class Agent(object):
     def pick_enemy(self, own_color):
         colors = ['red', 'blue', 'green', 'purple']
         colors.remove(own_color)
-        return colors.[random.randint(0, 2)]
+        return colors[random.randint(0, 2)]
 
     def tick(self, time_diff):
         """Some time has passed; decide what to do next."""
@@ -57,12 +59,15 @@ class Agent(object):
             #just ignore that for now, see if it works.
             self.bzrc.speed(tank.index, self.calculate_speed(tank, field))
 
+    def calculate_speed(self, tank, fields):
+        return 1.0
+
     def calculate_angvel(self, tank, fields):
-        res = field_calculator.calcuate_field_to_goal({'x': tank.x, 'y': tank.y}, {'x': fields.x, 'y': fields.y}, fields.r, fields.s)
+        res = field_calculator.calculate_field_to_goal({'x': tank.x, 'y': tank.y}, {'x': fields.x, 'y': fields.y}, fields.r, fields.s)
         # Res is a vector. now compare the angle of the vector to our angle.
-        target_angle_in_radians = math.atan2(res['x'], res['y'])
+        target_angle = math.atan2(res['x'], res['y'])
         tank_angle = tank.angle
-        direction = self.determine_turn_direction(tank_angle, target_angle)
+        direction = field_calculator.determine_turn_direction(tank_angle, target_angle)
         if direction == "clockwise":
             return 1
         else:
