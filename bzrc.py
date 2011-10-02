@@ -421,24 +421,21 @@ class BZRC:
         """Send commands for a bunch of tanks in a network-optimized way."""
         for cmd in commands:
             print(cmd)
-            self.sendline('speed %s %s' % (cmd.index, cmd.speed))
-            self.sendline('angvel %s %s' % (cmd.index, cmd.angvel))
-            if cmd.shoot:
-                self.sendline('shoot %s' % cmd.index)
+            self.sendline("%s" % cmd)
 
         results = []
-        for cmd in commands:
-            self.read_ack()
-            result_speed = self.read_bool()
-            self.read_ack()
-            result_angvel = self.read_bool()
-            if cmd.shoot:
-                self.read_ack()
-                result_shoot = self.read_bool()
-            else:
-                result_shoot = False
-            results.append((result_speed, result_angvel, result_shoot))
-        return results
+        # for cmd in commands:
+        #     self.read_ack()
+        #     result_speed = self.read_bool()
+        #     self.read_ack()
+        #     result_angvel = self.read_bool()
+        #     if cmd.shoot:
+        #         self.read_ack()
+        #         result_shoot = self.read_bool()
+        #     else:
+        #         result_shoot = False
+        #     results.append((result_speed, result_angvel, result_shoot))
+        # return results
 
 
 class Answer(object):
@@ -474,14 +471,14 @@ class ActionCommand(object):
 class ShootCommand(ActionCommand):
     """Class represents a command for a tank to shoot."""
     def __init__(self, index):
-        super(ActionCommand, self).__init__(index)
+        super(ShootCommand, self).__init__(index)
 
     def __str__(self):
         return "shoot %d" % self.index
 
 class SpeedCommand(ActionCommand):
     def __init__(self, index, speed):
-        super(ActionCommand, self).__init__(index)
+        super(SpeedCommand, self).__init__(index)
         self.speed = speed
 
     def __str__(self):
@@ -489,7 +486,7 @@ class SpeedCommand(ActionCommand):
 
 def AngvelCommand(ActionCommand):
     def __init__(self, index, ang_vel):
-        super(ActionCommand, self).__init__(index)
+        super(AngvelCommand, self).__init__(index)
         self.ang_vel = ang_vel
 
     def __str__(self):

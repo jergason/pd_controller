@@ -15,5 +15,5 @@ class Tank(object):
 
     def react(self, environment):
         """Calculate, based on the environment, what my next action should be."""
-        #environment is a h
+        #environment is adicitonary
         #TODO

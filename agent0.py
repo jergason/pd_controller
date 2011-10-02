@@ -25,7 +25,7 @@ import math
 import time
 import random
 
-from bzrc import BZRC, Command
+from bzrc import *
 
 class Agent(object):
     """Class handles all command and control logic for a teams tanks."""
@@ -62,19 +62,19 @@ class Agent(object):
         current_time = time.time()
         # Check if we need to shoot
         if current_time > self.last_shot_time + self.shoot_time_limit:
-            self.commands.append(Command(self.mytanks[0].index, 1, 0, True))
+            self.commands.append(ShootCommand(self.mytanks[0].index))
             self.last_shot_time = time.time()
             self.shoot_time_limit = random.uniform(1.5, 2.0)
 
         # If we need to start turning
         if current_time > self.last_turn_time + self.time_to_turn_60_degrees + self.move_time_limit and self.state != "turning":
             self.last_turn_time = current_time
-            self.commands.append(Command(self.mytanks[0].index, 1, 1, False))
+            self.commands.append(AngvelCommand(self.mytanks[0].index, 1))
             self.state = "turning"
         elif self.state == "turning":
             # If we need to stop turning
             if current_time > self.last_turn_time + self.time_to_turn_60_degrees:
-                self.commands.append(Command(self.mytanks[0].index, 1, 0, False))
+                self.commands.append(AngvelCommand(self.mytanks[0].index, 0))
                 self.state = "not_turning"
 
 
