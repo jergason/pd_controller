@@ -43,7 +43,11 @@ class Agent(object):
 
     def tick(self, time_diff):
         """Some time has passed; decide what to do next."""
+        #loop through each tank
+        #calculate field to goal
+        #move tank towards goal
         mytanks, othertanks, flags, shots = self.bzrc.get_lots_o_stuff()
+        print(mytanks[0].x)
         self.mytanks = mytanks
         self.othertanks = othertanks
         self.flags = flags
@@ -108,6 +112,7 @@ class Agent(object):
 
     def normalize_angle(self, angle):
         """Make any angle be between +/- pi."""
+
         angle -= 2 * math.pi * int (angle / (2 * math.pi))
         if angle <= -math.pi:
             angle += 2 * math.pi

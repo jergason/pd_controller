@@ -420,6 +420,7 @@ class BZRC:
     def do_commands(self, commands):
         """Send commands for a bunch of tanks in a network-optimized way."""
         for cmd in commands:
+            print(cmd)
             self.sendline('speed %s %s' % (cmd.index, cmd.speed))
             self.sendline('angvel %s %s' % (cmd.index, cmd.angvel))
             if cmd.shoot:
@@ -458,6 +459,48 @@ class Command(object):
         self.speed = speed
         self.angvel = angvel
         self.shoot = shoot
+
+    def __str__(self):
+        return "Command index: %s speed: %s angvel: %s shoot: %s" % (self.index, self.speed, self.angvel, self.shoot)
+
+class ActionCommand(object):
+    """Class for sending a command to a tank"""
+    def __init__(self, index):
+        self.index = index
+
+    def __str__(self):
+        return "SHOULDN'T CALL ME"
+
+class ShootCommand(ActionCommand):
+    """Class represents a command for a tank to shoot."""
+    def __init__(self, index):
+        super(ActionCommand, self).__init__(index)
+
+    def __str__(self):
+        return "shoot %d" % self.index
+
+class SpeedCommand(ActionCommand):
+    def __init__(self, index, speed):
+        super(ActionCommand, self).__init__(index)
+        self.speed = speed
+
+    def __str__(self):
+        return "speed %d %f" % (self.index, self.speed)
+
+def AngvelCommand(ActionCommand):
+    def __init__(self, index, ang_vel):
+        super(ActionCommand, self).__init__(index)
+        self.ang_vel = ang_vel
+
+    def __str__(self):
+        return "angvel %d %f" % (self.index, self.ang_vel)
+
+def QueryCommand(object):
+    def __init__(self, query):
+        self.query = query
+
+    def __str__(self):
+        "%s" % self.query
 
 
 class UnexpectedResponse(Exception):
