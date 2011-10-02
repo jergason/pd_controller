@@ -58,6 +58,7 @@ class Agent(object):
             #speed depends on how far away we are?
             #just ignore that for now, see if it works.
             self.bzrc.speed(tank.index, self.calculate_speed(tank, field))
+            self.bzrc.shoot(tank.index)
 
     def calculate_speed(self, tank, fields):
         return 1.0
@@ -69,9 +70,9 @@ class Agent(object):
         tank_angle = tank.angle
         direction = field_calculator.determine_turn_direction(tank_angle, target_angle)
         if direction == "clockwise":
-            return 1
+            return 0.4
         else:
-            return -1
+            return -0.4
 
     def attack_enemies(self, tank):
         """Find the closest enemy and chase it, shooting as you go."""
