@@ -39,7 +39,7 @@ class Agent(object):
         self.last_shot_time = 0.0
         self.move_time_limit = 4.0
         self.last_turn_time = time.time() + self.move_time_limit
-        self.time_to_turn_60_degrees = 0.6
+        self.time_to_turn_60_degrees = 1.5
 
     def tick(self, time_diff):
         """Some time has passed; decide what to do next."""
@@ -62,6 +62,7 @@ class Agent(object):
         # Check if we need to shoot
         if current_time > self.last_shot_time + self.shoot_time_limit:
             # self.commands.append(ShootCommand(self.mytanks[0].index))
+            print("shooting")
             self.bzrc.shoot(self.mytanks[0].index)
             self.last_shot_time = time.time()
             self.shoot_time_limit = random.uniform(1.5, 2.0)
