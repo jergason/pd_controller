@@ -54,35 +54,74 @@ class Agent(object):
                 enemy_flag = flag
 
         # Flag is the goal, so it creates an attractive field
-        # Self.obstacles = self.bzrc.get_obstacles()
-        # self.commands = []
-        field = Field(enemy_flag.x, enemy_flag.y, 5, 300)
-        print("the goal field is %s" % field)
+        obstacles = self.bzrc.get_obstacles()
+        fields = self.repulsive_and_tangential_fields_from_obstacles(obstacles)
+        attractive_field = Field(enemy_flag.x, enemy_flag.y, 5, 300)
+        attractive_field.kind = 'attractive'
 
-        # Loop through each tank, calculating speed
         for tank in self.mytanks:
-        # tank = self.mytanks[0]
             print("tank angle is %f x is %f y is %f" % (tank.angle, tank.x, tank.y))
             #if this tank has the flag, then its attractive field is the home base
             if tank.flag == self.enemy:
-                #hurp
-                print('i has it')
-                field = Field((self.base.corner1_x + self.base.corner3_x) / 2.0, (self.base.corner1_y + self.base.corner3_y) / 2.0, 5, 300)
-            # self.bzrc.angvel(tank.index, 0.0)
-            self.bzrc.angvel(tank.index, self.calculate_angvel(tank, field))
+                attractive_field = Field((self.base.corner1_x + self.base.corner3_x) / 2.0, (self.base.corner1_y + self.base.corner3_y) / 2.0, 5, 300)
+                attractive_field.kind = 'attractive'
+            fields.append(attractive_field)
+            self.bzrc.angvel(tank.index, self.calculate_angvel(tank, fields))
             #speed depends on how far away we are?
             #just ignore that for now, see if it works.
-            self.bzrc.speed(tank.index, self.calculate_speed(tank, field))
+            self.bzrc.speed(tank.index, self.calculate_speed(tank, fields))
             self.bzrc.shoot(tank.index)
+
+    def calculate_centroid(self, obstacle):
+        x = 0.0
+        y = 0.0
+        for point in obstacle:
+            x += point[0]
+            y += point[1]
+        return { 'x': x / float(len(obstacle)), 'y': y / float(len(obstacle)) }
+
+    def calculate_radius_from_centroid(self, centroid, obstacle):
+        return math.sqrt((centroid['x'] - obstacle[0][0]) ** 2 + (centroid['y'] - obstacle[0][1]) ** 2)
+
+
+    def repulsive_and_tangential_fields_from_obstacles(self, obstacles):
+        fields = []
+        for obstacle in obstacles:
+            centroid = self.calculate_centroid(obstacle)
+            radius = self.calculate_radius_from_centroid(centroid, obstacle)
+            field = Field(centroid['x'], centroid['y'], radius, 100)
+            field.kind = 'repulsive'
+            fields.append(field)
+            tan_field = Field(centroid['x'], centroid['y'], radius, 100)
+            tan_field.kind = 'tangential'
+            fields.append(tan_field)
+        return fields
+
 
     def calculate_speed(self, tank, fields):
         return 1.0
 
     def calculate_angvel(self, tank, fields):
-        res = field_calculator.calculate_field_to_goal({'x': tank.x, 'y': tank.y}, {'x': fields.x, 'y': fields.y}, fields.r, fields.s)
-        print("res is x: %f, y: %f" % (res['x'], res['y']))
+        x = 0.0
+        y = 0.0
+        for field in fields:
+            res = field_calculator.calculate_field_to_goal({'x': tank.x, 'y': tank.y}, {'x': field.x, 'y': field.y}, field.r, field.s)
+            if field.kind == 'attractive':
+                x += res['x']
+                y += res['y']
+            elif field.kind == 'repulsive':
+                x -= res['x']
+                y -= res['y']
+            elif field.kind == 'tangential':
+                x -= res['y']
+                y -= res['x']
+
+        target_angle = math.atan2(y, x)
+
+        # res = field_calculator.calculate_field_to_goal({'x': tank.x, 'y': tank.y}, {'x': fields.x, 'y': fields.y}, fields.r, fields.s)
+        # print("res is x: %f, y: %f" % (res['x'], res['y']))
         # Res is a vector. now compare the angle of the vector to our angle.
-        target_angle = math.atan2(res['y'], res['x'])
+        # target_angle = math.atan2(res['y'], res['x'])
         print("target angle is %f, my angle is %f" % (target_angle, tank.angle))
         tank_angle = tank.angle
         direction = field_calculator.determine_turn_direction(tank_angle, target_angle)
