@@ -1,9 +1,6 @@
 import math
 
-#todo: how to calculate what my angular velocity should be
-# based on what these vectors are?
-
-def calculate_field_to_goal(xy, goal_xy, r, s):
+def calculate_attractive_field_vector(xy, goal_xy, r, s):
     alpha = 0.1
     d = math.sqrt((xy['x'] - goal_xy['x']) ** 2 + (xy['y'] - goal_xy['y']) ** 2)
     theta = math.atan2((goal_xy['y'] - xy['y']), (goal_xy['x'] - xy['x']))
@@ -14,6 +11,18 @@ def calculate_field_to_goal(xy, goal_xy, r, s):
         return { 'x': alpha * (d - r) * math.cos(theta), 'y': alpha * (d - r) * math.sin(theta) }
     else:
         return { 'x': alpha * s * math.cos(theta), 'y': alpha * s * math.sin(theta) }
+
+def calculate_repulsive_field_vector(xy, goal_xy, r, s):
+    beta = 0.1
+    d = math.sqrt((xy['x'] - goal_xy['x']) ** 2 + (xy['y'] - goal_xy['y']) ** 2)
+    theta = math.atan2((goal_xy['y'] - xy['y']), (goal_xy['x'] - xy['x']))
+    if d < r:
+        return { 'x': -1 * math.cos(theta) * 1000, 'y': -1 * math.sin(theta) * 1000 }
+    elif r <= d and d <= s + r:
+        return { 'x': beta * (s + r - d) * math.cos(theta), 'y': beta * (s + r - d) * math.sin(theta) }
+    else:
+        return { 'x': 0.0, 'y': 0.0 }
+
 
 def determine_turn_direction(angle, target_angle):
     error_range = 0.05

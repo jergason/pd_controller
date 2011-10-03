@@ -56,6 +56,7 @@ class Agent(object):
         # Flag is the goal, so it creates an attractive field
         obstacles = self.bzrc.get_obstacles()
         fields = self.repulsive_and_tangential_fields_from_obstacles(obstacles)
+        # fields = []
         attractive_field = Field(enemy_flag.x, enemy_flag.y, 5, 300)
         attractive_field.kind = 'attractive'
 
@@ -105,24 +106,32 @@ class Agent(object):
         x = 0.0
         y = 0.0
         for field in fields:
-            res = field_calculator.calculate_field_to_goal({'x': tank.x, 'y': tank.y}, {'x': field.x, 'y': field.y}, field.r, field.s)
+            if field.kind == 'attractive':
+                res = field_calculator.calculate_attractive_field_vector({'x': tank.x, 'y': tank.y}, {'x': field.x, 'y': field.y}, field.r, field.s)
+            else:
+                res = field_calculator.calculate_repulsive_field_vector({'x': tank.x, 'y': tank.y}, {'x': field.x, 'y': field.y}, field.r, field.s)
+
             dx = tank.x-res['x'];
             dy = tank.y-res['y'];
-            tanRadius = 100;
-            repRadius = 100;
+            tanRadius = 50;
+            repRadius = 30;
 
             dist = math.sqrt(dx*dx + dy*dy);
             if field.kind == 'attractive':
                 x += res['x']
                 y += res['y']
             elif field.kind == 'repulsive':
-                if repRadius <= dist:
-                    x -= res['x']
-                    y -= res['y']
+                x -= res['x']
+                y -= res['y']
+                # if repRadius <= dist:
+                    # x -= 100.0 / res['x']
+                    # y -= 100.0 / res['y']
             elif field.kind == 'tangential':
-                if tanRadius <= dist:
-                    x -= res['y']
-                    y += res['x']
+                x -= res['y']
+                y += res['x']
+                # if tanRadius <= dist:
+                    # x -= 100.0 / res['y']
+                    # y += 100.0 / res['x']
 
         target_angle = math.atan2(y, x)
 
