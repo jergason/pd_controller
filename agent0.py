@@ -106,15 +106,23 @@ class Agent(object):
         y = 0.0
         for field in fields:
             res = field_calculator.calculate_field_to_goal({'x': tank.x, 'y': tank.y}, {'x': field.x, 'y': field.y}, field.r, field.s)
+            dx = tank.x-res['x'];
+            dy = tank.y-res['y'];
+            tanRadius = 100;
+            repRadius = 100;
+
+            dist = math.sqrt(dx*dx + dy*dy);
             if field.kind == 'attractive':
                 x += res['x']
                 y += res['y']
             elif field.kind == 'repulsive':
-                x -= res['x']
-                y -= res['y']
+                if repRadius <= dist:
+                    x -= res['x']
+                    y -= res['y']
             elif field.kind == 'tangential':
-                x -= res['y']
-                y -= res['x']
+                if tanRadius <= dist:
+                    x -= res['y']
+                    y += res['x']
 
         target_angle = math.atan2(y, x)
 
