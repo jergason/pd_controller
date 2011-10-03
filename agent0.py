@@ -25,11 +25,15 @@ class Agent(object):
         self.color = color
         self.constants = self.bzrc.get_constants()
         self.commands = []
-        self.bases = self.bzrc.get_bases()
+        self.base = self.get_own_base(self.color, self.bzrc.get_bases())
         self.enemy = self.pick_enemy(self.color)
         print("enemy is %s" % self.enemy)
         # How to tell what color I am?
 
+    def get_own_base(self, own_color, bases):
+        for base in bases:
+            if base.color == own_color:
+                return base
 
     def pick_enemy(self, own_color):
         colors = ['red', 'blue', 'green', 'purple']
@@ -52,25 +56,32 @@ class Agent(object):
         # Flag is the goal, so it creates an attractive field
         # Self.obstacles = self.bzrc.get_obstacles()
         # self.commands = []
-        field = Field(enemy_flag.x, enemy_flag.y, 5, 500)
-        # print("the goal field is %s" % field)
+        field = Field(enemy_flag.x, enemy_flag.y, 5, 300)
+        print("the goal field is %s" % field)
 
         # Loop through each tank, calculating speed
-        # for tank in self.mytanks:
-        tank = self.mytanks[0]
-        self.bzrc.angvel(tank.index, self.calculate_angvel(tank, field))
-        #speed depends on how far away we are?
-        #just ignore that for now, see if it works.
-        self.bzrc.speed(tank.index, self.calculate_speed(tank, field))
-        self.bzrc.shoot(tank.index)
+        for tank in self.mytanks:
+        # tank = self.mytanks[0]
+            print("tank angle is %f x is %f y is %f" % (tank.angle, tank.x, tank.y))
+            #if this tank has the flag, then its attractive field is the home base
+            if tank.flag == self.enemy:
+                #hurp
+                print('i has it')
+            # self.bzrc.angvel(tank.index, 0.0)
+            self.bzrc.angvel(tank.index, self.calculate_angvel(tank, field))
+            #speed depends on how far away we are?
+            #just ignore that for now, see if it works.
+            self.bzrc.speed(tank.index, self.calculate_speed(tank, field))
+            self.bzrc.shoot(tank.index)
 
     def calculate_speed(self, tank, fields):
         return 1.0
 
     def calculate_angvel(self, tank, fields):
         res = field_calculator.calculate_field_to_goal({'x': tank.x, 'y': tank.y}, {'x': fields.x, 'y': fields.y}, fields.r, fields.s)
+        print("res is x: %f, y: %f" % (res['x'], res['y']))
         # Res is a vector. now compare the angle of the vector to our angle.
-        target_angle = math.atan2(res['x'], res['y'])
+        target_angle = math.atan2(res['y'], res['x'])
         print("target angle is %f, my angle is %f" % (target_angle, tank.angle))
         tank_angle = tank.angle
         direction = field_calculator.determine_turn_direction(tank_angle, target_angle)
