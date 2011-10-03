@@ -67,6 +67,7 @@ class Agent(object):
             if tank.flag == self.enemy:
                 #hurp
                 print('i has it')
+                field = Field((self.base.corner1_x + self.base.corner3_x) / 2.0, (self.base.corner1_y + self.base.corner3_y) / 2.0, 5, 300)
             # self.bzrc.angvel(tank.index, 0.0)
             self.bzrc.angvel(tank.index, self.calculate_angvel(tank, field))
             #speed depends on how far away we are?
