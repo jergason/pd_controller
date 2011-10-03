@@ -5,3 +5,6 @@ class Field(object):
         self.y = y
         self.r = r
         self.s = s
+
+    def __str__(self):
+        return "x: %f y: %f r: %f s: %f" % (self.x, self.y, self.r, self.s)

@@ -15,7 +15,6 @@ import time
 import random
 import field_calculator
 from field import Field
-
 from bzrc import *
 
 class Agent(object):
@@ -28,6 +27,7 @@ class Agent(object):
         self.commands = []
         self.bases = self.bzrc.get_bases()
         self.enemy = self.pick_enemy(self.color)
+        print("enemy is %s" % self.enemy)
         # How to tell what color I am?
 
 
@@ -44,21 +44,25 @@ class Agent(object):
         # We only care about our enemy's flag
         enemy_flag = None
         for flag in self.flags:
+            # print("flag color: %s x: %f y: %f" % (flag.color, flag.x, flag.y))
             if flag.color == self.enemy:
+                # print("enemy found, and it is %s" % flag.color)
                 enemy_flag = flag
 
         # Flag is the goal, so it creates an attractive field
         # Self.obstacles = self.bzrc.get_obstacles()
-        self.commands = []
-        field = Field(flag.x, flag.y, 5, 500)
+        # self.commands = []
+        field = Field(enemy_flag.x, enemy_flag.y, 5, 500)
+        # print("the goal field is %s" % field)
 
         # Loop through each tank, calculating speed
-        for tank in self.mytanks:
-            self.bzrc.angvel(tank.index, self.calculate_angvel(tank, field))
-            #speed depends on how far away we are?
-            #just ignore that for now, see if it works.
-            self.bzrc.speed(tank.index, self.calculate_speed(tank, field))
-            self.bzrc.shoot(tank.index)
+        # for tank in self.mytanks:
+        tank = self.mytanks[0]
+        self.bzrc.angvel(tank.index, self.calculate_angvel(tank, field))
+        #speed depends on how far away we are?
+        #just ignore that for now, see if it works.
+        self.bzrc.speed(tank.index, self.calculate_speed(tank, field))
+        self.bzrc.shoot(tank.index)
 
     def calculate_speed(self, tank, fields):
         return 1.0
@@ -67,6 +71,7 @@ class Agent(object):
         res = field_calculator.calculate_field_to_goal({'x': tank.x, 'y': tank.y}, {'x': fields.x, 'y': fields.y}, fields.r, fields.s)
         # Res is a vector. now compare the angle of the vector to our angle.
         target_angle = math.atan2(res['x'], res['y'])
+        print("target angle is %f, my angle is %f" % (target_angle, tank.angle))
         tank_angle = tank.angle
         direction = field_calculator.determine_turn_direction(tank_angle, target_angle)
         if direction == "clockwise":
