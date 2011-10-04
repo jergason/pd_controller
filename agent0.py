@@ -28,19 +28,21 @@ from bzrc import *
 class Agent(object):
     """Class handles all command and control logic for a teams tanks."""
 
-    def __init__(self, bzrc):
+    def __init__(self, bzrc, number_of_agents):
         self.bzrc = bzrc
         self.constants = self.bzrc.get_constants()
         self.bzrc.sendline('mytanks')
         self.bzrc.read_ack()
         mytanks = self.bzrc.read_mytanks()
-        self.tank1 = DumbTank(self.bzrc, mytanks[0])
-        self.tank2 = DumbTank(self.bzrc, mytanks[1])
+        self.mytanks = []
+        self.number_of_agents = number_of_agents
+        for tank in mytanks:
+            self.mytanks.append(DumbTank(self.bzrc, tank))
 
     def tick(self, time_diff):
         """Some time has passed; decide what to do next."""
-        self.tank1.tick(time_diff)
-        self.tank2.tick(time_diff)
+        for r in range(self.number_of_agents):
+            self.mytanks[r].tick(time_diff)
 
 
 def main():
@@ -57,7 +59,7 @@ def main():
     #bzrc = BZRC(host, int(port), debug=True)
     bzrc = BZRC(host, int(port))
 
-    agent = Agent(bzrc)
+    agent = Agent(bzrc, 2)
 
     prev_time = time.time()
 
