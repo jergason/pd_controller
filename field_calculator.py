@@ -4,7 +4,7 @@ def calculate_attractive_field_vector(xy, goal_xy, r, s):
     alpha = 0.1
     d = math.sqrt((xy['x'] - goal_xy['x']) ** 2 + (xy['y'] - goal_xy['y']) ** 2)
     theta = math.atan2((goal_xy['y'] - xy['y']), (goal_xy['x'] - xy['x']))
-    print("theta is %f, d is %f, s is %f, r is %f" % (theta, d, s, r))
+    # print("theta is %f, d is %f, s is %f, r is %f" % (theta, d, s, r))
     if d < r:
         return {'x': 0, 'y': 0}
     elif r <= d and d <= s + r:

@@ -61,7 +61,7 @@ class Agent(object):
         attractive_field.kind = 'attractive'
 
         for tank in self.mytanks:
-            print("tank angle is %f x is %f y is %f" % (tank.angle, tank.x, tank.y))
+            # print("tank angle is %f x is %f y is %f" % (tank.angle, tank.x, tank.y))
             #if this tank has the flag, then its attractive field is the home base
             if tank.flag == self.enemy:
                 attractive_field = Field((self.base.corner1_x + self.base.corner3_x) / 2.0, (self.base.corner1_y + self.base.corner3_y) / 2.0, 5, 300)
@@ -144,7 +144,7 @@ class Agent(object):
         # print("res is x: %f, y: %f" % (res['x'], res['y']))
         # Res is a vector. now compare the angle of the vector to our angle.
         # target_angle = math.atan2(res['y'], res['x'])
-        print("target angle is %f, my angle is %f" % (target_angle, tank.angle))
+        # print("target angle is %f, my angle is %f" % (target_angle, tank.angle))
         tank_angle = tank.angle
         direction = field_calculator.determine_turn_direction(tank_angle, target_angle)
         if direction == "clockwise":
