@@ -100,6 +100,11 @@ class Agent(object):
 
 
     def calculate_speed(self, tank, fields):
+        # for field in fields:
+        #     if field.kind == 'attractive':
+        #         dist = math.sqrt((field.x - tank.x) ** 2 + (field.y - tank.y) ** 2)
+        #         if dist < 50:
+        #             return dist / 50.0
         return 1.0
 
     def calculate_angvel(self, tank, fields):
